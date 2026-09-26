@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: logitrack-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: logitrack_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - logitrack_postgres_data:/var/lib/postgresql/data
+      - ./backend/Desafio LogAp Carga Inicial.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d logitrack_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: logitrack-app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/logitrack_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SUPABASE_URL: ${VITE_SUPABASE_URL:?Configure VITE_SUPABASE_URL in the root .env file}
+      SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY:?Configure VITE_SUPABASE_PUBLISHABLE_KEY in the root .env file}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: logitrack-frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5173:5173"
+    environment:
+      VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:?Configure VITE_SUPABASE_URL in the root .env file}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY:?Configure VITE_SUPABASE_PUBLISHABLE_KEY in the root .env file}
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules_supabase:/app/node_modules
+    depends_on:
+      app:
+        condition: service_started
+
+volumes:
+  logitrack_postgres_data:
+  frontend_node_modules_supabase:
