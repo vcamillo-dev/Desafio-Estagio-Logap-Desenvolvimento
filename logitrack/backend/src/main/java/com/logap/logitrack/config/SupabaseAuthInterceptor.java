@@ -75,7 +75,7 @@ public class SupabaseAuthInterceptor implements HandlerInterceptor {
         } catch (IllegalArgumentException exception) {
             writeError(response, HttpStatus.SERVICE_UNAVAILABLE, "A URL do projeto Supabase está inválida.");
             return false;
-        } catch (Exception exception) {
+        } catch (IOException | RuntimeException exception) {
             writeError(response, HttpStatus.SERVICE_UNAVAILABLE, "Não foi possível verificar a sessão no Supabase.");
             return false;
         }
