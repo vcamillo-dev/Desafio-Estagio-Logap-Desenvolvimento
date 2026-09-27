@@ -28,10 +28,14 @@ services:
       - "127.0.0.1:8080:8080"
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/logitrack_db
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: logitrack_db
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
       SUPABASE_URL: ${VITE_SUPABASE_URL:?Configure VITE_SUPABASE_URL in the root .env file}
       SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY:?Configure VITE_SUPABASE_PUBLISHABLE_KEY in the root .env file}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:8080}
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,6 +51,8 @@ services:
     environment:
       VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:?Configure VITE_SUPABASE_URL in the root .env file}
       VITE_SUPABASE_PUBLISHABLE_KEY: ${VITE_SUPABASE_PUBLISHABLE_KEY:?Configure VITE_SUPABASE_PUBLISHABLE_KEY in the root .env file}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+      VITE_DEV_API_TARGET: ${VITE_DEV_API_TARGET:-http://app:8080}
     volumes:
       - ./frontend:/app
       - frontend_node_modules_supabase:/app/node_modules
