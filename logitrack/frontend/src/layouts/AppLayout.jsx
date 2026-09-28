@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth.js'
+import { demoMode } from '../config/appMode.js'
 import useFleetData from '../hooks/useFleetData.js'
 import useFleetActions from '../hooks/useFleetActions.js'
 import { getDashboardViewData, getMaintenanceViewData, getVehicleViewData } from '../utils/fleetViewData.js'
@@ -67,9 +68,10 @@ export default function AppLayout({ activePage }) {
         <AppHeader
           pageTitle={pageTitle}
           pageDescription={pageDescription}
-          userLabel={session.user.user_metadata?.nome || session.user.email}
-          userInitial={(session.user.user_metadata?.nome || session.user.email || 'L').charAt(0).toUpperCase()}
+          userLabel={demoMode ? 'Modo demonstração' : (session.user.user_metadata?.nome || session.user.email)}
+          userInitial={(demoMode ? 'D' : (session.user.user_metadata?.nome || session.user.email || 'L')).charAt(0).toUpperCase()}
           onSignOut={signOut}
+          showSignOut={!demoMode}
           showAction={activePage !== 'financeiro'}
           actionLabel={activePage === 'veiculos' ? 'Novo veículo' : 'Nova manutenção'}
           onAction={activePage === 'veiculos' ? actions.openNewVehicle : actions.openNewMaintenance}

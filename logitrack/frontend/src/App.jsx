@@ -6,17 +6,18 @@ import AppLayout from './layouts/AppLayout.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { useAuth } from './context/useAuth.js'
 import { supabaseConfigured } from './supabaseClient.js'
+import { demoMode } from './config/appMode.js'
 
 function ProtectedRoute({ children }) {
   const { session, loading } = useAuth()
   if (loading) return <main className="auth-page"><div className="auth-loading">Carregando LogiTrack…</div></main>
-  return session ? children : <Navigate to="/login" replace />
+  return demoMode || session ? children : <Navigate to="/login" replace />
 }
 
 function LoginRoute() {
   const { session, loading } = useAuth()
   if (loading) return <main className="auth-page"><div className="auth-loading">Carregando LogiTrack…</div></main>
-  return session ? <Navigate to="/" replace /> : <AuthScreen configured={supabaseConfigured} />
+  return demoMode || session ? <Navigate to="/" replace /> : <AuthScreen configured={supabaseConfigured} />
 }
 
 export default function App() {

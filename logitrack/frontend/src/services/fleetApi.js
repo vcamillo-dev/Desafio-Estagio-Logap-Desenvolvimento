@@ -1,10 +1,16 @@
 import { supabase } from '../supabaseClient.js'
+import { demoMode } from '../config/appMode.js'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || ''
 
 export async function apiRequest(path, options = {}) {
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-  if (sessionError) throw sessionError
+  let session = null
+  if (!demoMode) {
+    if (!supabase) throw new Error('A autenticação do Supabase não está configurada.')
+    const { data, error: sessionError } = await supabase.auth.getSession()
+    if (sessionError) throw sessionError
+    session = data.session
+  }
 
   const requestUrl = apiBaseUrl ? new URL(path, apiBaseUrl).toString() : path
   const response = await fetch(requestUrl, {
@@ -28,7 +34,7 @@ export async function apiRequest(path, options = {}) {
   }
 
   if (response.status === 401) {
-    await supabase.auth.signOut()
+    if (supabase) await supabase.auth.signOut()
     throw new Error('Sua sessão expirou. Entre novamente.')
   }
 

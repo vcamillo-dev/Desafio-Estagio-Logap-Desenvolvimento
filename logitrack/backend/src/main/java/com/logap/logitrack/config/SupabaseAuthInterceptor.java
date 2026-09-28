@@ -20,19 +20,27 @@ public class SupabaseAuthInterceptor implements HandlerInterceptor {
 
     private final String supabaseUrl;
     private final String publishableKey;
+    private final boolean authenticationEnabled;
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public SupabaseAuthInterceptor(
             @Value("${supabase.url}") String supabaseUrl,
-            @Value("${supabase.publishable-key}") String publishableKey) {
+            @Value("${supabase.publishable-key}") String publishableKey,
+            @Value("${app.auth.enabled:true}") boolean authenticationEnabled) {
         this.supabaseUrl = supabaseUrl;
         this.publishableKey = publishableKey;
+        this.authenticationEnabled = authenticationEnabled;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws IOException {
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
+        // O bypass só é habilitado explicitamente pelo Compose local. Por padrão, a API exige Supabase.
+        if (!authenticationEnabled) {
             return true;
         }
 
