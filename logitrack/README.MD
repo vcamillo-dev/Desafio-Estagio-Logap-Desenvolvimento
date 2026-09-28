@@ -12,6 +12,9 @@ Aplicação web para visualizar e gerenciar veiculos e manutenções de uma frot
 - Mantem os dados registrados no banco e continua mesmo que a pagina seja fechada ou front-end reiniciado
 
 ## Como rodar o projeto ?
+
+# Projeto hospedado no render através do link : https://logitrack-web-yrh7.onrender.com/
+
 [!NOTE]
 Realizei todo projeto utilizando Kubuntu
 ### Pré-requisitos
